@@ -1,0 +1,93 @@
+Decision Tree-2Assignment Questions 
+Assignment 
+You are a data scientist working for a healthcare company, and you have been tasked with creating a  decision tree to help identify patients with diabetes based on a set of clinical variables. You have been  given a dataset (diabetes.csv) with the following variables: 
+1. Pregnancies: Number of times pregnant (integer) 
+2. Glucose: Plasma glucose concentration a 2 hours in an oral glucose tolerance test (integer) 3. 3.BloodPressure: Diastolic blood pressure (mm Hg) (integer) 
+4. SkinThickness: Triceps skin fold thickness (mm) (integer) 
+5. Insulin: 2-Hour serum insulin (mu U/ml) (integer) 
+6. BMI: Body mass index (weight in kg/(height in m)^2) (float) 
+7. DiabetesPedigreeFunction: Diabetes pedigree function (a function which scores likelihood of diabetes  based on family history) (float) 
+8. Age: Age in years (integer) 
+9. Outcome: Class variable (0 if non-diabetic, 1 if diabetic) (integer) 
+
+Here’s the dataset link:  usp=sharing 
+https://drive.google.com/file/d/1Q4J8KS1wm4-_YTuc389enPh6O-eTNcx2/view? 
+
+Your goal is to create a decision tree to predict whether a patient has diabetes based on the other  variables. Here are the steps you can follow: 
+Q1. Import the dataset and examine the variables. Use descriptive statistics and visualizations to  understand the distribution and relationships between the variables. 
+relation=df.describe()
+relation
+sns.heatmap(data=relation,annot=True,linewidths=1)
+
+Q2. Preprocess the data by cleaning missing values, removing outliers, and transforming categorical  variables into dummy variables if necessary.
+rows_to_impute=df['Glucose','BloodPressure','SkinThickness','Insulin','BMI']
+subset=df[rows_to_impute]
+impute=SimpleImputer( strategy='median', missing_values=0)
+df_filled=pd.DataFrame(impute.fit_transform(subset),columns=subset_df.columns)
+ 
+Q3. Split the dataset into a training set and a test set. Use a random seed to ensure reproducibility. 
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.33,random_state=42)
+
+Q4. Use a decision tree algorithm, such as ID3 or C4.5, to train a decision tree model on the training set. Use  cross-validation to optimize the hyperparameters and avoid overfitting. 
+ from sklearn.tree import DecisionTreeClassifier
+clf= DecisionTreeClassifier()
+import warnings
+warnings.filterwarnings('ignore')
+parameters={ 
+    'criterion':['gini', 'entropy', 'log_loss'],
+    'splitter':['best', 'random'],
+    'max_depth':[1,2,3,4,5,6],
+    'max_features': ['auto', 'sqrt', 'log2']
+}
+from sklearn.model_selection import GridSearchCV
+classifier=DecisionTreeClassifier()
+clf_1=GridSearchCV(classifier,param_grid=parameters,cv=5,scoring='accuracy')
+clf_1.fit(x_train,y_train)
+
+Q5. Evaluate the performance of the decision tree model on the test set using metrics such as accuracy,  precision, recall, and F1 score. Use confusion matrices and ROC curves to visualize the results. 
+score_one=accuracy_score(y_pred1,y_test)
+print(score_one)
+result=classification_report(y_test,y_pred1)
+print(result)
+from sklearn.metrics import confusion_matrix
+conf_matrix = confusion_matrix(y_test, y_pred1)
+conf_matrix
+
+Q6. Interpret the decision tree by examining the splits, branches, and leaves. Identify the most important  variables and their thresholds. Use domain knowledge and common sense to explain the patterns and  trends. 
+Interpretation:
+Root Node (Top Split):
+Split on x1 (glucose) with a threshold of 154.5.
+This suggests that glucose level is a crucial factor in determining the outcome.
+Left Branch (if glucose <= 154.5):
+Further split based on x7 (age) with a threshold of 30.5.
+Age is an important factor after glucose, indicating that younger individuals may be handled differently in predicting the outcome.
+Right Branch (if glucose > 154.5):
+Split based on x5 (BMI) with a threshold of 28.7.
+BMI becomes important in older individuals (as glucose is already high), indicating that weight may be a significant factor in this group.
+Left Leaf (glucose <= 154.5, age <= 30.5):
+Gini impurity is 0.24.
+Majority of individuals in this group (216 out of 251) have a positive outcome.
+Younger individuals with glucose levels below 154.5 are more likely to have a positive outcome.
+Right Leaf (glucose <= 154.5, age > 30.5):
+Gini impurity is 0.487.
+The distribution of outcomes is more balanced in this group.
+Older individuals with glucose levels below 154.5 are less likely to have a positive outcome.
+Left Leaf (glucose > 154.5, BMI <= 28.7):
+Gini impurity is 0.486.
+Majority of individuals in this group (64 out of 70) have a positive outcome.
+For individuals with high glucose levels but lower BMI, the majority have a positive outcome.
+Right Leaf (glucose > 154.5, BMI > 28.7):
+Gini impurity is 0.157.
+The distribution of outcomes is highly skewed towards a positive outcome.
+For individuals with high glucose levels and higher BMI, the majority have a positive outcome.
+Patterns and Trends:
+Glucose Level (x1): Glucose is identified as the most important variable, with a threshold of 154.5. High glucose levels are associated with a higher likelihood of a positive outcome, aligning with common medical knowledge regarding diabetes and its diagnosis based on glucose levels.
+Age (x7): Age is a secondary important factor, particularly for individuals with glucose levels below 154.5. Younger individuals (age <= 30.5) with lower glucose levels have a higher likelihood of a positive outcome.
+BMI (x5): BMI becomes important for individuals with glucose levels above 154.5, particularly for older individuals (age > 30.5). Higher BMI in this group is associated with a higher likelihood of a positive outcome.
+
+Q7. Validate the decision tree model by applying it to new data or testing its robustness to changes in the  dataset or the environment. Use sensitivity analysis and scenario testing to explore the uncertainty and  risks. 
+By following these steps, you can develop a comprehensive understanding of decision tree modeling and  its applications to real-world healthcare problems. Good luck! 
+Note:  Create your assignment in Jupyter notebook and upload it to GitHub & share that github repository  link through your dashboard. Make sure the repository is public.
+Data Science Masters 
